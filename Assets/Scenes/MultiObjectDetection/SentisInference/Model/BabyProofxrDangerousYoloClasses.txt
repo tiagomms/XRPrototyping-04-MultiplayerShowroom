@@ -1,0 +1,8 @@
+bottle
+wine glass
+cup
+fork
+knife
+vase
+scissors
+pottedplant

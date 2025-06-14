@@ -1,0 +1,52 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &6869119224729642046
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5169472745328260556}
+  - component: {fileID: 6552098361304519945}
+  m_Layer: 0
+  m_Name: Passthrough Camera Image Display
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5169472745328260556
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6869119224729642046}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0.070217356, y: -0.7036118, z: 0.070217356, w: 0.7036118}
+  m_LocalPosition: {x: -1.598, y: 1.847, z: -0.34499997}
+  m_LocalScale: {x: 0.3848201, y: 0.38482, z: 0.38482013}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &6552098361304519945
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6869119224729642046}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fd2c0e8540f656b4e92e2ca2ea0c0f78, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  webcamManager: {fileID: 0}
+  quadRenderer: {fileID: 0}
+  textureName: _BaseMap
+  quadDistance: 2
+  passthroughCameraTaker: {fileID: 0}
+  cameraTransform: {fileID: 0}
