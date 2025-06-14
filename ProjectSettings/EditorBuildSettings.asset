@@ -6,8 +6,11 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Scenes/ElectricalCircuitOverlay.unity
-    guid: 283d43ea76f287d419f31fdb383e3efe
+    path: Assets/Scenes/SpaceSharing/Scenes/Menu.unity
+    guid: e26f81c2c09f1e3439e68ccaa68be16d
+  - enabled: 1
+    path: Assets/Scenes/SpaceSharing/Scenes/LocalSpaceSharing.unity
+    guid: aa837f322991b3946908831c850aeb5e
   m_configObjects:
     Unity.XR.Oculus.Settings: {fileID: 11400000, guid: a5b2c48b0392fd0489dbfc3a278e929d, type: 2}
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
