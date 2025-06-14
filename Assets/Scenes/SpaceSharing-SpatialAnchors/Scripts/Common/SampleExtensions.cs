@@ -40,35 +40,6 @@ static class SampleExtensions
     }
 
 
-    public static bool TryGetPlatformID([CanBeNull] this Player photonPlayer, out ulong uid)
-    {
-        uid = 0;
-        if (photonPlayer is null ||
-            !photonPlayer.CustomProperties.TryGetValue(k_PlatIDKey, out var box) ||
-            box is not long rawUid)
-        {
-            return false;
-        }
-
-        uid = new Reinterpret64 { Signed = rawUid }.Unsigned;
-
-        return uid > 0;
-    }
-
-    public static void SetPlatformID([CanBeNull] this Player photonPlayer, ulong uid)
-    {
-        var props = new Hashtable
-        {
-            [k_PlatIDKey] = uid == 0 ? null : new Reinterpret64 { Unsigned = uid }.Signed
-        };
-
-        if (photonPlayer.SetCustomProperties(props) || uid == 0)
-            return;
-
-        Sampleton.Error($"Photon ERR: failed to set {photonPlayer.NickName}.CustomProperties[{nameof(k_PlatIDKey)}] = {uid}");
-    }
-
-
     [NotNull]
     public static byte[] SerializeToByteArray<T>([CanBeNull] T obj) where T : new()
     {
@@ -166,6 +137,70 @@ static class SampleExtensions
         }
 
         return string.Empty;
+    }
+
+
+    /// <summary>
+    ///     Determines if an <see cref="OVRSpatialAnchor.OperationResult"/> code might
+    ///     imply that invoking the same operation again <em>could</em> succeed,
+    ///     typically after a timed delay.
+    /// </summary>
+    /// <remarks>
+    ///     NOTE: This check is suggestive, not exhaustive.
+    ///     It is also more educational here in its source code form,
+    ///     than it is impactful at runtime.
+    /// </remarks>
+    public static bool RetryingMightSucceed(this OVRSpatialAnchor.OperationResult opResult)
+    {
+        switch (opResult)
+        {
+            // true cases:
+            case OVRSpatialAnchor.OperationResult.Success:
+                // ^ Succeeding once certainly indicates it might succeed again.
+                return true;
+
+            case OVRSpatialAnchor.OperationResult.Failure_SpaceMappingInsufficient:
+                // ^ This result means your and your anchor-sharing peer's HMDs don't
+                // register as colocated (physically near each other) enough to be
+                // able to load the shared anchors.  Assuming you two are definitely
+                // in the same physical space, some temporary obstruction could be
+                // confusing your HMD(s), such as poor light levels, some kinds of electronic
+                // interference, stationary guardians facing away from each other, etc.
+                // If whatever the obstruction is clears up, a retry operation could
+                // succeed.
+                return true;
+
+            case OVRSpatialAnchor.OperationResult.Failure_SpaceLocalizationFailed:
+                // ^ Failed localization = your device couldn't figure out how to pose
+                // loaded anchors in the real world.  This could be due to variable
+                // factors such as light level, obscured sensor lenses, doffing the
+                // HMD in the middle of the load request...
+                // in summary, transient causes.
+                return true;
+
+            case OVRSpatialAnchor.OperationResult.Failure_GroupNotFound:
+                // ^ A load operation might fail with "GroupNotFound" but then succeed
+                // if retried shortly thereafter if (for example) the group UUID was
+                // transmitted to peers *before* any anchors had been completely
+                // shared to the group.  (This is a very possible case when using
+                // the OVRColocationSession API.)  Simply waiting until at least 1
+                // anchor completes the ShareAsync call before you retry the operation
+                // often results in successful retries.
+                return true;
+
+            // false cases:
+            default:
+                return false;
+
+            case OVRSpatialAnchor.OperationResult.Failure_SpaceNetworkTimeout:
+                // ^ Network timeouts are a commonplace reason to retry ops. Though,
+                // given how often they lead to indefinite waiting times on behalf of
+                // living, breathing users, it's probably best if your app informs
+                // the user(s) about the timeout issue instead of automatically retrying
+                // the op.  Perhaps they'd have better luck if they helped the app
+                // troubleshoot (e.g. check wifi connectivity) before manually retrying.
+                return false;
+        }
     }
 
 
