@@ -3,7 +3,7 @@
 using JetBrains.Annotations;
 
 using Meta.XR.MRUtilityKit;
-
+using Oculus.Interaction;
 using Photon.Pun;
 
 using System.Collections;
@@ -26,7 +26,6 @@ public class Sampleton : MonoBehaviour
 {
     //
     // Static interface
-
     public static ConnectMethod ConnectMethod
         => s_Instance ? s_Instance.m_Connexion : ConnectMethod.None;
 
@@ -128,6 +127,8 @@ public class Sampleton : MonoBehaviour
 
     //
     // Static logging interface
+    public static void Log(string message, LogType type = LogType.Log, LogOption opt = LogOption.NoStacktrace) 
+        => Log(message, type, opt != LogOption.NoStacktrace);
 
     public static void Log(object message, LogType type = LogType.Log, bool trace = false)
     {
@@ -159,6 +160,13 @@ public class Sampleton : MonoBehaviour
 
     public static void Warn(object message)
         => Log(message, type: LogType.Warning, trace: true);
+
+    public static void LogError(string message)
+        => Log(message, type: LogType.Error, opt: LogOption.None);
+
+    // for transitional compatibility:
+    public static void Log(string message, bool error, LogOption opt = LogOption.None)
+        => Log(message, error ? LogType.Error : LogType.Log, opt);
 
 
     // private
@@ -316,7 +324,6 @@ public class Sampleton : MonoBehaviour
     [SerializeField]
     Transform m_PlayerFace;
 
-
     //
     // MonoBehaviour messages
 
@@ -403,24 +410,26 @@ public class Sampleton : MonoBehaviour
                 }
                 break;
         }
-
+        
         // ensure logs start at the last page
         LogEnd();
     }
-
     void LateUpdate()
     {
         UpdateLogText();
     }
 
+    
 
     //
     // UnityEvent-compatible interface
+    private static int s_PreviousSceneIndex = -1;
 
     public static void LoadScene(int buildIdx)
     {
         if (buildIdx >= 0 && buildIdx < SceneManager.sceneCountInBuildSettings)
         {
+            s_PreviousSceneIndex = SceneManager.GetActiveScene().buildIndex;
             SceneManager.LoadScene(buildIdx);
             Log($"{nameof(LoadScene)}({buildIdx}): {SceneManager.GetSceneByBuildIndex(buildIdx).name}");
         }
@@ -444,6 +453,11 @@ public class Sampleton : MonoBehaviour
 #endif
     }
 
+    public static void GoToInitialScene()
+    {
+        LoadScene(0);
+    }
+
     public static void GoBack()
     {
         switch (ConnectMethod)
@@ -460,13 +474,27 @@ public class Sampleton : MonoBehaviour
                 else
                 {
                     PhotonNetwork.Disconnect();
-                    SceneManager.LoadScene(0);
+                    if (s_PreviousSceneIndex >= 0)
+                    {
+                        LoadScene(s_PreviousSceneIndex);
+                    }
+                    else
+                    {
+                        LoadScene(0);
+                    }
                 }
                 break;
 
             default:
             case ConnectMethod.ColocationSession:
-                SceneManager.LoadScene(0);
+                if (s_PreviousSceneIndex >= 0)
+                {
+                    LoadScene(s_PreviousSceneIndex);
+                }
+                else
+                {
+                    LoadScene(0);
+                }
                 break;
         }
     }
@@ -564,6 +592,7 @@ public class Sampleton : MonoBehaviour
         if (doColor)
             s_LogBuilder.Append("</color>");
     }
+
 
     void UpdateLogText()
     {

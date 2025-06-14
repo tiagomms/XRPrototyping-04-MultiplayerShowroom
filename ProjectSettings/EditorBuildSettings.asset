@@ -6,10 +6,19 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Scenes/SpaceSharing/Scenes/Menu.unity
+    path: Assets/Scenes/SpaceSharing-SpatialAnchors/Scenes/00-SpatialAnchorsMenu.unity
+    guid: d4f1e5e31c6f1e247a017adca3a5e585
+  - enabled: 1
+    path: Assets/Scenes/SpaceSharing-SpatialAnchors/Scenes/01-SharedSpatialAnchors.unity
+    guid: 3e5c354ba585aa7418cee9e90af74e7c
+  - enabled: 1
+    path: Assets/Scenes/SpaceSharing-SpatialAnchors/Scenes/02-ColocationSessionGroups.unity
+    guid: 51824fa595108234e8dda6af5bd9cad7
+  - enabled: 1
+    path: Assets/Scenes/SpaceSharing-SpatialAnchors/Scenes/03-MenuSpaceSharing.unity
     guid: e26f81c2c09f1e3439e68ccaa68be16d
   - enabled: 1
-    path: Assets/Scenes/SpaceSharing/Scenes/LocalSpaceSharing.unity
+    path: Assets/Scenes/SpaceSharing-SpatialAnchors/Scenes/04-LocalSpaceSharing.unity
     guid: aa837f322991b3946908831c850aeb5e
   m_configObjects:
     Unity.XR.Oculus.Settings: {fileID: 11400000, guid: a5b2c48b0392fd0489dbfc3a278e929d, type: 2}
