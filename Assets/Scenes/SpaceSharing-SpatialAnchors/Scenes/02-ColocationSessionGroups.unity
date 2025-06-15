@@ -9922,6 +9922,7 @@ MonoBehaviour:
   - {fileID: 46876817}
   - {fileID: 233344713}
   - {fileID: 859804473}
+  uiCanvas: {fileID: 0}
 --- !u!222 &2022449733285901051
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -11758,6 +11759,7 @@ MonoBehaviour:
   pageText: {fileID: 7452495321589155930}
   anchorPrefab: {fileID: 6622841189011462005, guid: 4661765eb117ae4418bcc8c6828a5ce4, type: 3}
   _rayInteractor: {fileID: 886307226}
+  assignUiLater: 0
 --- !u!222 &7452495322097034170
 CanvasRenderer:
   m_ObjectHideFlags: 0

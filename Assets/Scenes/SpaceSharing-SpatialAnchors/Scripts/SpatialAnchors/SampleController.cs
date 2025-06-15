@@ -35,6 +35,8 @@ public class SampleController : MonoBehaviour
     [SerializeField]
     RayInteractor _rayInteractor;
 
+    [SerializeField]
+    private bool assignUiLater = false;
 
     bool m_IsPlacementMode;
 
@@ -44,7 +46,12 @@ public class SampleController : MonoBehaviour
         if (!gameObject.scene.IsValid()) // I'm in a prefab, shouldn't expect scene references to exist yet
             return;
 
-        if (!rightHandAnchor || !placementPreview || !logText || !pageText || !anchorPrefab)
+        if (!rightHandAnchor || !placementPreview || !anchorPrefab)
+        {
+            Debug.LogError($"\"{name}\" seems to be improperly set-up.", this);
+        }
+
+        if (!assignUiLater && (!logText || !pageText))
         {
             Debug.LogError($"\"{name}\" seems to be improperly set-up.", this);
         }
@@ -104,6 +111,13 @@ public class SampleController : MonoBehaviour
         }
     }
 
+    public void AssignUI(UiCollocationMenu uiCollocationMenu)
+    {
+        ClearLog();
+        logText = uiCollocationMenu.LogText;
+        pageText = uiCollocationMenu.PageText;
+    }
+
     public void StartPlacementMode()
     {
         m_IsPlacementMode = true;
@@ -132,7 +146,7 @@ public class SampleController : MonoBehaviour
 
     static readonly System.Text.StringBuilder s_LogBuilder = new();
 
-    void LogInScene(string message, LogType type)
+    public void LogInScene(string message, LogType type)
     {
         // In VR Logging
 
@@ -169,6 +183,15 @@ public class SampleController : MonoBehaviour
         logText.pageToDisplay = p;
         if (pageText)
             pageText.text = $"{p}/{p}";
+    }
+
+    /// <summary>
+    /// Clears all logged messages
+    /// </summary>
+    public void ClearLog()
+    {
+        s_LogBuilder.Clear();
+        UpdateLogText();
     }
 
 } // end MonoBehaviour SampleController

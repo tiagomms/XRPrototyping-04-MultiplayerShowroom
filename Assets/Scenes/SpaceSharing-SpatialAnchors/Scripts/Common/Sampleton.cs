@@ -145,6 +145,11 @@ public class Sampleton : MonoBehaviour
 
         if (s_Instance)
             s_Instance.LogInScene(msgStr, type);
+        
+        if (SampleController.Instance != null)
+        {
+            SampleController.Instance.LogInScene(msgStr, type);
+        }
     }
 
     public static void Log(object message, bool error)
