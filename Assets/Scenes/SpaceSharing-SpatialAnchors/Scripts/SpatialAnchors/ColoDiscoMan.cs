@@ -564,10 +564,16 @@ public class ColoDiscoMan : MonoBehaviour // AKA ColocationSessionDiscoveryAndGr
     public void ActivateCanvas()
     {
         uiCanvas.SetActive(true);
+        if (gameObject.TryGetComponent<BaseUI>(out var baseUI))
+        {
+            Sampleton.SetMenuUI(baseUI);
+        }
     }
 
     public void DeactivateCanvas()
     {
+        Sampleton.GoBackToMainMenu();
+
         uiCanvas.SetActive(false);
     }
 

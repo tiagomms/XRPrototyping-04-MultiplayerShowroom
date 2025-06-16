@@ -329,6 +329,12 @@ public class Sampleton : MonoBehaviour
     [SerializeField]
     Transform m_PlayerFace;
 
+
+    [Header("Optional - Use only in case of multiple BaseUI")]
+    [SerializeField]
+    // NOTE: Main Menu must be always the first in order for the code to work
+    List<BaseUI> m_allMenuUIs; 
+
     //
     // MonoBehaviour messages
 
@@ -358,6 +364,13 @@ public class Sampleton : MonoBehaviour
             if (rig)
                 m_PlayerFace = rig.centerEyeAnchor;
         }
+
+        // NOTE: the starting m_MenuUI should always be the first one
+        if (!m_allMenuUIs.Contains(m_MenuUI))
+        {
+            m_allMenuUIs.Insert(0, m_MenuUI);
+        }
+        
     }
 
     void OnEnable()
@@ -368,8 +381,12 @@ public class Sampleton : MonoBehaviour
         if (!m_MenuUI)
             return;
 
-        m_MenuUI.OnDisplayLobby += LogEnd;
-        m_MenuUI.OnDisplayRoom += LogEnd;
+        foreach (var menu in m_allMenuUIs)
+        {
+            menu.OnDisplayLobby += LogEnd;
+            menu.OnDisplayRoom += LogEnd;    
+        }
+
     }
 
     void OnDisable()
@@ -382,8 +399,11 @@ public class Sampleton : MonoBehaviour
         if (!m_MenuUI)
             return;
 
-        m_MenuUI.OnDisplayLobby -= LogEnd;
-        m_MenuUI.OnDisplayRoom -= LogEnd;
+        foreach (var menu in m_allMenuUIs)
+        {
+            menu.OnDisplayLobby -= LogEnd;
+            menu.OnDisplayRoom -= LogEnd;    
+        }
     }
 
     void Awake()
@@ -649,6 +669,7 @@ public class Sampleton : MonoBehaviour
             return;
         }
 
+        /*
         // Unsubscribe from old menu events
         if (s_Instance.m_MenuUI != null)
         {
@@ -656,10 +677,12 @@ public class Sampleton : MonoBehaviour
             s_Instance.m_MenuUI.OnDisplayRoom -= s_Instance.LogEnd;
             Log($"Unsubscribed from old menu UI: {s_Instance.m_MenuUI.GetType().Name}");
         }
+        */
 
         // Set new menu UI
         s_Instance.m_MenuUI = newMenuUI;
 
+        /*
         // Subscribe to new menu events
         if (s_Instance.m_MenuUI != null)
         {
@@ -671,5 +694,11 @@ public class Sampleton : MonoBehaviour
         {
             Warn("New menu UI is null - no events will be subscribed");
         }
+        */
+    }
+
+    public static void GoBackToMainMenu()
+    {
+        SetMenuUI(s_Instance.m_allMenuUIs[0]);
     }
 }

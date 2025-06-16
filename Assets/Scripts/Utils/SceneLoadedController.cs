@@ -29,18 +29,26 @@ public class SceneLoadedController : MonoBehaviour
 
     private void EnsureCorrectPosition(Scene scene)
     {
-        foreach (var go in gameObjectsToActivate)
-        {
-            if (go != null)
-                go.SetActive(true);
-        }
+        // need to yield an extra frame to properly account for layout recalcs~
+        _ = StartCoroutine(coroutine());
+        return;
 
-        foreach (var go in gameObjectsToDeactivate)
+        IEnumerator coroutine()
         {
-            if (go != null)
-                go.SetActive(false);
-        }
+            yield return null;
+            foreach (var go in gameObjectsToActivate)
+            {
+                if (go != null)
+                    go.SetActive(true);
+            }
 
-        Sampleton.Log($"[{nameof(SceneLoadedController)}] Scene loaded: {scene.name} — toggled UI states.");
+            foreach (var go in gameObjectsToDeactivate)
+            {
+                if (go != null)
+                    go.SetActive(false);
+            }
+
+            Sampleton.Log($"[{nameof(SceneLoadedController)}] Scene loaded: {scene.name} — toggled UI states.");
+        }
     }
 }
