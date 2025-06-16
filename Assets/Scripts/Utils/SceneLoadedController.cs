@@ -24,12 +24,11 @@ public class SceneLoadedController : MonoBehaviour
 
     private void HandleSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        StartCoroutine(EnsureCorrectPosition(scene));
+        EnsureCorrectPosition(scene);
     }
 
-    private IEnumerator EnsureCorrectPosition(Scene scene)
+    private void EnsureCorrectPosition(Scene scene)
     {
-        yield return new WaitForSeconds(1f); // wait a frame
         foreach (var go in gameObjectsToActivate)
         {
             if (go != null)

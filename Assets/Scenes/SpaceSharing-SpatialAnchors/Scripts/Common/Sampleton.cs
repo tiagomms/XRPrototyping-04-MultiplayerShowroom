@@ -566,6 +566,13 @@ public class Sampleton : MonoBehaviour
 
     //
     // LogInScene impl.
+    public void AssignUI(UiCollocationMenu uiCollocationMenu)
+    {
+        //LogClear();
+        m_LogText = uiCollocationMenu.LogText;
+        m_PageLabel = uiCollocationMenu.PageText;
+    }
+
 
     static readonly StringBuilder s_LogBuilder = new();
     static readonly Dictionary<LogType, string> s_LogColors = new()
@@ -632,5 +639,37 @@ public class Sampleton : MonoBehaviour
 
         if (m_PageLabel)
             m_PageLabel.SetText($"{p}/{z}");
+    }
+
+    public static void SetMenuUI(BaseUI newMenuUI)
+    {
+        if (s_Instance == null)
+        {
+            LogError("Cannot set menu UI - Sampleton instance is null");
+            return;
+        }
+
+        // Unsubscribe from old menu events
+        if (s_Instance.m_MenuUI != null)
+        {
+            s_Instance.m_MenuUI.OnDisplayLobby -= s_Instance.LogEnd;
+            s_Instance.m_MenuUI.OnDisplayRoom -= s_Instance.LogEnd;
+            Log($"Unsubscribed from old menu UI: {s_Instance.m_MenuUI.GetType().Name}");
+        }
+
+        // Set new menu UI
+        s_Instance.m_MenuUI = newMenuUI;
+
+        // Subscribe to new menu events
+        if (s_Instance.m_MenuUI != null)
+        {
+            s_Instance.m_MenuUI.OnDisplayLobby += s_Instance.LogEnd;
+            s_Instance.m_MenuUI.OnDisplayRoom += s_Instance.LogEnd;
+            Log($"Subscribed to new menu UI: {s_Instance.m_MenuUI.GetType().Name}");
+        }
+        else
+        {
+            Warn("New menu UI is null - no events will be subscribed");
+        }
     }
 }

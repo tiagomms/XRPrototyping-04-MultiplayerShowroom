@@ -95,20 +95,23 @@ public class BaseUI : MonoBehaviour
     [SerializeField]
     protected UnityEvent m_OnDisplayRoom = new();
 
+    [SerializeField]
+    protected bool ignoreMenuAnchor = false;
+
 
     //
     // MonoBehaviour messages
 
     protected virtual void OnValidate()
     {
-        if (!m_MenuAnchor)
+        if (!m_MenuAnchor && !ignoreMenuAnchor)
         {
             var find = GameObject.Find("Ref Point");
             if (find)
                 m_MenuAnchor = find.transform;
         }
 
-        if (gameObject.scene.IsValid() && !m_MenuAnchor) // avoids erroring in prefab view
+        if (gameObject.scene.IsValid() && !m_MenuAnchor && !ignoreMenuAnchor) // avoids erroring in prefab view
         {
             Debug.LogError($"\"{name}\" seems to be improperly set-up. (no anchor for canvas)", this);
         }
@@ -116,9 +119,12 @@ public class BaseUI : MonoBehaviour
 
     protected virtual IEnumerator Start()
     {
-        transform.parent = m_MenuAnchor;
-        transform.localPosition = Vector3.zero;
-        transform.localRotation = Quaternion.identity;
+        if (!ignoreMenuAnchor)
+        {
+            transform.parent = m_MenuAnchor;
+            transform.localPosition = Vector3.zero;
+            transform.localRotation = Quaternion.identity;
+        }
 
         DisplayLobbyPanel();
 
