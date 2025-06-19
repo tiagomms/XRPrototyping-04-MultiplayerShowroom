@@ -5,6 +5,7 @@ using JetBrains.Annotations;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 using TMPro;
@@ -131,7 +132,10 @@ public class SampleStatus : MonoBehaviour
     //
     // private impl.
 
-    static SampleStatus s_Instance;
+    static SampleStatus s_Instance => s_Instances.FirstOrDefault(i => i.isActiveAndEnabled);
+    static readonly List<SampleStatus> s_Instances = new();
+    static IReadOnlyList<SampleStatus> Instances => s_Instances;
+
     static readonly List<(int order, string line)> s_StatusLines = new();
     static readonly StringBuilder s_Stringer = new();
 
@@ -192,26 +196,30 @@ public class SampleStatus : MonoBehaviour
     {
         if (s_Instance && s_Instance != this)
         {
-            s_Instance.OnDestroy();
-            Destroy(s_Instance.gameObject);
+            s_Instance.OnDisable();
         }
 
-        s_Instance = this;
+        s_Instances.Add(this);
 
         m_Coroutines.Clear();
 
         Rebuild();
     }
 
-    void OnDestroy()
+    void OnDisable()
     {
-        if (s_Instance != this)
-            return;
-
-        s_Instance = null;
+        if (s_Instances.Count > 0 && s_Instances.Contains(this))
+        {
+            s_Instances.Remove(this);
+        }
 
         if (m_ClearOnDestroy)
             Clear();
+    }
+
+    void OnDestroy()
+    {
+        s_Instances.Clear();
     }
 
 } // end MonoBehaviour SampleStatus

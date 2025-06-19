@@ -14,6 +14,8 @@ using UnityEngine.Assertions;
 using UnityEngine.SceneManagement;
 using UnityEngine.Serialization;
 using UnityEngine.UI;
+using System.Collections;
+using UnityEngine.Rendering.UI;
 
 public class ColoDiscoMan : MonoBehaviour // AKA ColocationSessionDiscoveryAndGroupSharingManager
 {
@@ -410,8 +412,34 @@ public class ColoDiscoMan : MonoBehaviour // AKA ColocationSessionDiscoveryAndGr
     [Tooltip("Depends on the value of 'Require Logged In User'.")]
     Selectable[] m_DisabledWithoutValidUser = Array.Empty<Selectable>();
 
+    [SerializeField]
+    [Tooltip("To enable/disable canvas because of the way Tracking Space Cameras work")]
+    GameObject uiCanvas;
 
-    static ColoDiscoMan s_Instance;
+    // TODO: read this FIXME
+    // FIXME: this implementation is very bad. It requires scene loader otherwise bit otherwise it crashes, and all UI appears right at begining 
+    //  I was having issues with popping objects in the anchors (because when SetActive(true)), they would offset to weird positions 
+    //  I thought it was because of how anchors work, but it appears I had written
+    //  the SetParent line of code wrong. The code should be: transform.SetParent(m_RigAnchor, worldPositionStays: false);// and I put true;
+    //  Unfortunately, I did not have time to check if hiding/showing objects does not work with anchors or it was because of that silly mistake
+
+    // Returns the first instance with an active UI canvas, or if none have UI canvas, returns the first instance
+    static ColoDiscoMan s_Instance 
+    {
+        get {
+            // First try to find an instance with an active UI canvas
+            var instanceWithCanvas = s_Instances.FirstOrDefault(i => i.uiCanvas != null && i.uiCanvas.activeSelf);
+            if (instanceWithCanvas != null)
+                return instanceWithCanvas;
+
+            // If no instance has an active UI canvas, return the first instance
+            return s_Instances.FirstOrDefault();
+        }
+    }
+    
+
+    static readonly List<ColoDiscoMan> s_Instances = new();
+    static IReadOnlyList<ColoDiscoMan> Instances => s_Instances;
     static NetworkReachability s_Reachability = NetworkReachability.ReachableViaCarrierDataNetwork;
 
     bool m_AutoShare;
@@ -506,8 +534,11 @@ public class ColoDiscoMan : MonoBehaviour // AKA ColocationSessionDiscoveryAndGr
 
     void Awake()
     {
-        Assert.IsNull(s_Instance, "s_Instance already exists");
-        s_Instance = this;
+        if (!s_Instances.Contains(this))
+        {
+            s_Instances.Add(this);
+            Sampleton.Log($"[{nameof(ColoDiscoMan)}] - Instance Added from game object {gameObject.name}", false);
+        }
 
         if (m_HardcodedGroupUUID?.Equals("build", StringComparison.InvariantCultureIgnoreCase) == true)
         {
@@ -526,17 +557,42 @@ public class ColoDiscoMan : MonoBehaviour // AKA ColocationSessionDiscoveryAndGr
             m_GroupListItem.SetActive(false);
             m_GroupListItem.GetComponentInParent<RectTransform>().sizeDelta = new(-17f, 32f); // screwy
         }
-
-        if (!m_RigAnchor)
-            return;
-
+        
         transform.SetParent(m_RigAnchor, worldPositionStays: false);
     }
 
-    void OnDestroy()
+    public void ActivateCanvas()
     {
-        s_Instance = null;
+        uiCanvas.SetActive(true);
+        if (gameObject.TryGetComponent<BaseUI>(out var baseUI))
+        {
+            Sampleton.SetMenuUI(baseUI);
+        }
+    }
 
+    public void DeactivateCanvas()
+    {
+        Sampleton.GoBackToMainMenu();
+        Sampleton.GoBack(); // NOTE: to make sure Photon stuff is handled correctly 
+        uiCanvas.SetActive(false);
+    }
+
+    private void OnDisable()
+    {
+        if (!m_RigAnchor)
+            return;
+
+        if (s_Instances.Count > 0 && s_Instances.Contains(this))
+        {
+            s_Instances.Remove(this);
+        }
+
+        Sampleton.Log($"[{nameof(ColoDiscoMan)}] - Instance Removed from game object {gameObject.name}", false);
+        Reset();
+    }
+
+    private void Reset()
+    {
         if (m_IsAdvertising)
         {
             // KEY API CALL: static OVRColocationSession.StopAdvertisementAsync()
@@ -551,6 +607,11 @@ public class ColoDiscoMan : MonoBehaviour // AKA ColocationSessionDiscoveryAndGr
 
         // KEY API CALL: static event OVRColocationSession.ColocationSessionDiscovered
         OVRColocationSession.ColocationSessionDiscovered -= ReceivedSessionData;
+    }
+
+    private void OnDestroy()
+    {
+        s_Instances.Clear();
     }
 
     void Start()

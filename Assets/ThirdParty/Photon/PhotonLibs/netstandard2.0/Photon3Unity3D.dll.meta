@@ -12,7 +12,7 @@ PluginImporter:
   validateReferences: 1
   platformData:
   - first:
-      : Any
+      '': Any
     second:
       enabled: 0
       settings:
@@ -67,36 +67,6 @@ PluginImporter:
       settings:
         CPU: AnyCPU
   - first:
-      GameCoreScarlett: GameCoreScarlett
-    second:
-      enabled: 1
-      settings: {}
-  - first:
-      GameCoreXboxOne: GameCoreXboxOne
-    second:
-      enabled: 1
-      settings: {}
-  - first:
-      Lumin: Lumin
-    second:
-      enabled: 1
-      settings: {}
-  - first:
-      Nintendo Switch: Switch
-    second:
-      enabled: 1
-      settings: {}
-  - first:
-      PS4: PS4
-    second:
-      enabled: 1
-      settings: {}
-  - first:
-      PS5: PS5
-    second:
-      enabled: 1
-      settings: {}
-  - first:
       Standalone: Linux
     second:
       enabled: 1
@@ -148,11 +118,6 @@ PluginImporter:
         SDK: AnySDK
         ScriptingBackend: Il2Cpp
   - first:
-      XboxOne: XboxOne
-    second:
-      enabled: 1
-      settings: {}
-  - first:
       iPhone: iOS
     second:
       enabled: 1
@@ -160,6 +125,48 @@ PluginImporter:
         AddToEmbeddedBinaries: false
         CompileFlags: 
         FrameworkDependencies: 
+  - first:
+      PS4: PS4
+    second:
+      enabled: 1
+      settings: {}
+  - first:
+      PS5: PS5
+    second:
+      enabled: 1
+      settings: {}
+  - first:
+      Nintendo Switch: Switch
+    second:
+      enabled: 1
+      settings: {}
+  - first:
+      XboxOne: XboxOne
+    second:
+      enabled: 1
+      settings: {}
+  - first:
+      GameCoreScarlett: GameCoreScarlett
+    second:
+      enabled: 1
+      settings: {}
+  - first:
+      GameCoreXboxOne: GameCoreXboxOne
+    second:
+      enabled: 1
+      settings: {}
+  - first:
+      Lumin: Lumin
+    second:
+      enabled: 1
+      settings: {}
   userData: 
   assetBundleName: 
   assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 267958
+  packageName: Photon Fusion
+  packageVersion: 2.0.6
+  assetPath: Assets/Photon/PhotonLibs/netstandard2.0/Photon3Unity3D.dll
+  uploadId: 755233

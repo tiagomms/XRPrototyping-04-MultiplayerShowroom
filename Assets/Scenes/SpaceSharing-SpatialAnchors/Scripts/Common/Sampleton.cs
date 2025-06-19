@@ -145,6 +145,11 @@ public class Sampleton : MonoBehaviour
 
         if (s_Instance)
             s_Instance.LogInScene(msgStr, type);
+        
+        if (SampleController.Instance != null)
+        {
+            SampleController.Instance.LogInScene(msgStr, type);
+        }
     }
 
     public static void Log(object message, bool error)
@@ -324,6 +329,12 @@ public class Sampleton : MonoBehaviour
     [SerializeField]
     Transform m_PlayerFace;
 
+
+    [Header("Optional - Use only in case of multiple BaseUI")]
+    [SerializeField]
+    // NOTE: Main Menu must be always the first in order for the code to work
+    List<BaseUI> m_allMenuUIs; 
+
     //
     // MonoBehaviour messages
 
@@ -353,6 +364,13 @@ public class Sampleton : MonoBehaviour
             if (rig)
                 m_PlayerFace = rig.centerEyeAnchor;
         }
+
+        // NOTE: the starting m_MenuUI should always be the first one
+        if (!m_allMenuUIs.Contains(m_MenuUI))
+        {
+            m_allMenuUIs.Insert(0, m_MenuUI);
+        }
+        
     }
 
     void OnEnable()
@@ -363,8 +381,12 @@ public class Sampleton : MonoBehaviour
         if (!m_MenuUI)
             return;
 
-        m_MenuUI.OnDisplayLobby += LogEnd;
-        m_MenuUI.OnDisplayRoom += LogEnd;
+        foreach (var menu in m_allMenuUIs)
+        {
+            menu.OnDisplayLobby += LogEnd;
+            menu.OnDisplayRoom += LogEnd;    
+        }
+
     }
 
     void OnDisable()
@@ -377,8 +399,11 @@ public class Sampleton : MonoBehaviour
         if (!m_MenuUI)
             return;
 
-        m_MenuUI.OnDisplayLobby -= LogEnd;
-        m_MenuUI.OnDisplayRoom -= LogEnd;
+        foreach (var menu in m_allMenuUIs)
+        {
+            menu.OnDisplayLobby -= LogEnd;
+            menu.OnDisplayRoom -= LogEnd;    
+        }
     }
 
     void Awake()
@@ -561,6 +586,13 @@ public class Sampleton : MonoBehaviour
 
     //
     // LogInScene impl.
+    public void AssignUI(UiCollocationMenu uiCollocationMenu)
+    {
+        //LogClear();
+        m_LogText = uiCollocationMenu.LogText;
+        m_PageLabel = uiCollocationMenu.PageText;
+    }
+
 
     static readonly StringBuilder s_LogBuilder = new();
     static readonly Dictionary<LogType, string> s_LogColors = new()
@@ -627,5 +659,46 @@ public class Sampleton : MonoBehaviour
 
         if (m_PageLabel)
             m_PageLabel.SetText($"{p}/{z}");
+    }
+
+    public static void SetMenuUI(BaseUI newMenuUI)
+    {
+        if (s_Instance == null)
+        {
+            LogError("Cannot set menu UI - Sampleton instance is null");
+            return;
+        }
+
+        /*
+        // Unsubscribe from old menu events
+        if (s_Instance.m_MenuUI != null)
+        {
+            s_Instance.m_MenuUI.OnDisplayLobby -= s_Instance.LogEnd;
+            s_Instance.m_MenuUI.OnDisplayRoom -= s_Instance.LogEnd;
+            Log($"Unsubscribed from old menu UI: {s_Instance.m_MenuUI.GetType().Name}");
+        }
+        */
+
+        // Set new menu UI
+        s_Instance.m_MenuUI = newMenuUI;
+
+        /*
+        // Subscribe to new menu events
+        if (s_Instance.m_MenuUI != null)
+        {
+            s_Instance.m_MenuUI.OnDisplayLobby += s_Instance.LogEnd;
+            s_Instance.m_MenuUI.OnDisplayRoom += s_Instance.LogEnd;
+            Log($"Subscribed to new menu UI: {s_Instance.m_MenuUI.GetType().Name}");
+        }
+        else
+        {
+            Warn("New menu UI is null - no events will be subscribed");
+        }
+        */
+    }
+
+    public static void GoBackToMainMenu()
+    {
+        SetMenuUI(s_Instance.m_allMenuUIs[0]);
     }
 }
