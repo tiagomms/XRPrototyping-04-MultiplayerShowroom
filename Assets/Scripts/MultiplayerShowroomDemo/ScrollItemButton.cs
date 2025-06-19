@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using TMPro;
+using Utils;
 
 public class ScrollItemButton : MonoBehaviour
 {
@@ -12,6 +13,8 @@ public class ScrollItemButton : MonoBehaviour
     [SerializeField] private Button button;
     [SerializeField] private TextMeshProUGUI label;
 
+    [SerializeField] private SceneItemRuntimeHolder sceneItemRuntimeHolder;
+
     private void Awake()
     {
         if (button == null)
@@ -19,14 +22,17 @@ public class ScrollItemButton : MonoBehaviour
 
         if (label == null)
             label = GetComponentInChildren<TextMeshProUGUI>();
+
+        if (sceneItemRuntimeHolder == null)
+        {
+            var item = Resources.Load<SceneItemRuntimeHolder>(ConstantPaths.RESOURCES_MULTIPLAYER);
+        }
     }
 
     private void GoToNextScene()
     {
         // store data heading to next scene
-        // TODO: scriptable objects here instead of this dirty static
-        StaticSceneDataTransfer.selectedIndex = itemIndex;
-        StaticSceneDataTransfer.selectedName = itemName;
+        sceneItemRuntimeHolder.SetDataLocally(itemIndex, itemName);
 
         if (sceneIndex >= 0)
             SceneManager.LoadScene(sceneIndex);
@@ -35,10 +41,10 @@ public class ScrollItemButton : MonoBehaviour
     // Optional: expose this so you can initialize dynamically
     public void SetData(int index, string name, int sceneIndex)
     {
-        itemIndex = (index+1);
+        itemIndex = index;
         itemName = name;
         this.sceneIndex = sceneIndex;
-        label.text = $"{itemIndex.ToString("0.##")}. {name}";
+        label.text = $"{(index+1).ToString("0.##")}. {name}";
 
         if (sceneIndex >= 0)
         {

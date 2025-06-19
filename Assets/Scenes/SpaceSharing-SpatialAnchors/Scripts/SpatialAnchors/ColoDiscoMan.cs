@@ -573,7 +573,7 @@ public class ColoDiscoMan : MonoBehaviour // AKA ColocationSessionDiscoveryAndGr
     public void DeactivateCanvas()
     {
         Sampleton.GoBackToMainMenu();
-
+        Sampleton.GoBack(); // NOTE: to make sure Photon stuff is handled correctly 
         uiCanvas.SetActive(false);
     }
 

@@ -54,6 +54,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   button: {fileID: 2818007369262236015}
   label: {fileID: 1174126387451099336}
+  sceneItemRuntimeHolder: {fileID: 11400000, guid: da6a89b67ab3b9d4892245c7a2c871d6, type: 2}
 --- !u!114 &2818007369262236015
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -76,8 +77,8 @@ MonoBehaviour:
   m_Transition: 1
   m_Colors:
     m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
-    m_HighlightedColor: {r: 0.7433963, g: 0.7433963, b: 0.7433963, a: 1}
-    m_PressedColor: {r: 0.5698112, g: 0.5698112, b: 0.5698112, a: 1}
+    m_HighlightedColor: {r: 0.6754716, g: 0.6754716, b: 0.6754716, a: 1}
+    m_PressedColor: {r: 0.5018867, g: 0.49147022, b: 0.49147022, a: 1}
     m_SelectedColor: {r: 0.97735846, g: 0.97735846, b: 0.97735846, a: 1}
     m_DisabledColor: {r: 0.2905661, g: 0.2905661, b: 0.2905661, a: 0.5019608}
     m_ColorMultiplier: 1
@@ -630,7 +631,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 2100000, guid: 2c59325cff8447d47899d7e518a87833, type: 2}
-  m_Color: {r: 0.29411766, g: 0.29411766, b: 0.29411766, a: 1}
+  m_Color: {r: 0.7056604, g: 0.7056604, b: 0.7056604, a: 0.3019608}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
